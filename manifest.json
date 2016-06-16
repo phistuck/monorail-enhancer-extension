@@ -1,0 +1,16 @@
+{
+ "name": "Monorail Enhancer",
+ "version": "0.0.0.1",
+ "manifest_version": 2,
+ "description": "Adds a \"Run\" button to the HTML attachment source coce viewer, removes inline videos, adds playback without saving and fixes middle clicks on issue lists of Monorail.",
+ "content_scripts":
+ [
+  {
+   "js": ["injector.js"],
+   "matches": ["*://bugs.chromium.org/p/*/issues/attachmentText*",
+   "*://bugs.chromium.org/p/*/issues/detail?*",
+   "*://bugs.chromium.org/p/*/issues/list?*"],
+   "run_at": "document_start"
+  }
+ ]
+}
