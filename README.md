@@ -2,11 +2,11 @@
 Enhancing Monorail, for a speedier bug driving. Err... tracking.
 
 ## Features
-- Adds a \"Run\" button to the HTML attachment source coce viewer.
+- Adds a \"Run\" button to the HTML attachment source code viewer.
 - Removes inline videos.
 - Adds audio and video playback without saving the file first.
 - Fixes middle clicks on issue lists.
-
+c
 ## Compatibility
 Should work with any browser that supports the content script feature of Chrome extensions (so Edge, Firefox, Opera and Chrome?), ECMAScript 5 Array.prototype.map and Array.prototype.forEach.
 
