@@ -190,6 +190,13 @@ function runIssueView()
  }
  document.documentElement.appendChild(document.createElement("style"))
   .textContent = "video {display: none;}";
+ document.addEventListener("DOMContentLoaded", enhanceOldVideos);
+
+ if (!window.MutationObserver)
+ {
+  return;
+ }
+
  // A poor attempt to make videos not download, or to make the browser
  // cancel the video download. It does not really work. :(
  new MutationObserver(function() {
@@ -206,7 +213,6 @@ function runIssueView()
    childList: true,
    subtree: true
   });
- document.addEventListener("DOMContentLoaded", enhanceOldVideos);
 }
 
 if (url.indexOf("issues/attachmentText?") !== -1)
