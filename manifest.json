@@ -1,6 +1,6 @@
 {
  "name": "Monorail Enhancer",
- "version": "0.0.0.2",
+ "version": "0.0.0.3",
  "manifest_version": 2,
  "description": "Enhances Monorail by letting you browse to HTML attachments, fixing middle clicks on issue lists and more.",
  "content_scripts":
