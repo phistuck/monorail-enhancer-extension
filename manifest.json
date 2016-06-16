@@ -2,7 +2,7 @@
  "name": "Monorail Enhancer",
  "version": "0.0.0.1",
  "manifest_version": 2,
- "description": "Adds a \"Run\" button to the HTML attachment source coce viewer, removes inline videos, adds playback without saving and fixes middle clicks on issue lists of Monorail.",
+ "description": "Enhances Monorail by letting you browser to HTML attachments, fixing middle clicks on issue lists and more.",
  "content_scripts":
  [
   {
