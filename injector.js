@@ -49,6 +49,182 @@ function runAttachmentView()
  eLink.addEventListener("click", processContent);
 }
 
+function addNavigationalButtons()
+{
+ var commentHeights,
+     commentList,
+     overflowingCommentList,
+     windowHeight = 0,
+     windowWidth = 0,
+     shouldShowOverlays,
+     currentlyVisibleComment,
+     eOverlay;
+
+ function getComments(renew)
+ {
+  if (renew || !commentList)
+  {
+   commentList = document.querySelectorAll(".issuecomment");
+  }
+  return commentList;
+ }
+
+ function calculateElementHeightsAndTops(elements)
+ {
+   var scrollTop = window.scrollY;
+   return Array.prototype.map.call(
+           elements,
+           function (e)
+           {
+            var rect = e.getClientRects()[0];
+
+            return {
+                    element: e,
+                    top: rect.top + scrollTop,
+                    height: rect.height || (rect.bottom - rect.top)
+                   };
+           });
+ }
+
+ function getOverflowingElements(elements, maximalHeight)
+ {
+   return elements.filter(
+           function (element)
+           {
+             return element.height > maximalHeight;
+           });
+ }
+
+ function intializeOverflowingCommentsList(
+            viewportHeight, shouldOnlyUpdateFilter)
+ {
+   // window.removeEventListener("resize", handleResize);
+   window.addEventListener("resize", handleResize);
+   // window.removeEventListener("scroll", handleScroll);
+   window.addEventListener("scroll", handleScroll);
+
+   if (!shouldOnlyUpdateFilter)
+   {
+     commentList = calculateElementHeightsAndTops(getComments());
+   }
+
+   overflowingCommentList =
+    getOverflowingElements(commentList, viewportHeight);
+   shouldShowOverlays = !!overflowingCommentList.length;
+ }
+
+ function handleResize()
+ {
+  var previousWindowWidth = windowWidth,
+      previousWindowHeight = windowHeight,
+      currentWindowWidth = window.innerWidth,
+      currentWindowHeight = window.innerHeight,
+      shouldOnlyUpdateFilter = currentWindowWidth === previousWindowWidth,
+      heightDelta = previousWindowHeight - currentWindowHeight;
+  
+  // The window was only resized a bit, bail.
+  if (previousWindowWidth !== 0 && (heightDelta < 10 || heightDelta > -10))
+  {
+   return;
+  }
+
+  windowHeight = currentWindowHeight;
+  windowWidth = currentWindowWidth;
+
+  // TODO - implement some delay instead of recalculating on resize?
+  // Some users resize slowly.
+
+  intializeOverflowingCommentsList(windowHeight, shouldOnlyUpdateFilter);
+ }
+
+ function handleScroll()
+ {
+  if (!shouldShowOverlays)
+  {
+   return;
+  }
+
+  var scrollTop = window.scrollY;
+
+  var currentlyVisibleComments =
+   overflowingCommentList.filter(
+    function (e)
+    {
+     return (e.top < scrollTop) &&
+            ((e.top + e.height) > scrollTop + windowHeight);
+    });
+
+  if (currentlyVisibleComments.length !== 1)
+  {
+    currentlyVisibleComment = 0;
+    eOverlay.classList.add("hidden");
+    return;
+  }
+  currentlyVisibleComment = currentlyVisibleComments[0];
+  eOverlay.classList.remove("hidden");
+ }
+
+ function handlePreviousCommentClick(e)
+ {
+  e.preventDefault();
+  var previousCommentIndex = commentList.indexOf(currentlyVisibleComment);
+  if (previousCommentIndex === 0)
+  {
+   scrollTo(scrollX, 0);
+  }
+  else
+  {
+   scrollTo(
+    scrollX,
+    commentList[commentList.indexOf(currentlyVisibleComment) - 1].top);
+  }
+ }
+
+ function handleNextCommentClick(e) {
+  e.preventDefault();
+  var nextCommentIndex = commentList.indexOf(currentlyVisibleComment);
+  if (nextCommentIndex === (commentList.length - 1))
+  {
+   scrollTo(scrollX, 9e9);
+  }
+  else
+  {
+   scrollTo(
+    scrollX,
+    commentList[commentList.indexOf(currentlyVisibleComment) + 1].top);
+  }
+ }
+
+ // Use MutationObserver in order to adjust to dynamically added comments,
+ // in case that is ever implemented.
+ // function handleDynamicallyAddedElements()
+ // {
+ //  getComments(true);
+ //  handleResize();
+ // }
+
+ function initializeOverlay()
+ {
+  eOverlay = document.body.appendChild(document.createElement("div"));
+  eOverlay.classList.add("comment-navigator-overlay", "hidden");
+  eOverlay.innerHTML =
+   "<style>.comment-navigator-overlay a" +
+   "{text-decoration: none; display: block;}" +
+   ".comment-navigator-overlay.hidden{visibility: hidden;}" +
+   ".comment-navigator-overlay:hover{opacity:1;}" +
+   ".comment-navigator-overlay{opacity: 0.5; border-radius: 5px; " +
+   "background: lightblue; color: black; top: 20px; position: fixed; " +
+   "right: 20px;}</style>" +
+   "<a href=\"#\" title=\"Previous comment\">▲</a>" +
+   "<a href=\"#\" title=\"Next comment\">▼</a>";
+  eOverlay.children[1].addEventListener("click", handlePreviousCommentClick);
+  eOverlay.children[2].addEventListener("click", handleNextCommentClick);
+  handleResize();
+ }
+
+ initializeOverlay();
+}
+
 function runListView()
 {
  var eResults = document.querySelector("#resultstable"),
@@ -115,7 +291,8 @@ function runListView()
       },
       200);
    }
-   else if (shouldInitiateOpen) {
+   else if (shouldInitiateOpen)
+   {
     open();
    }
   });
@@ -191,6 +368,7 @@ function runIssueView()
  document.documentElement.appendChild(document.createElement("style"))
   .textContent = "video {display: none;}";
  document.addEventListener("DOMContentLoaded", enhanceOldVideos);
+ window.addEventListener("load", addNavigationalButtons);
 
  if (!window.MutationObserver)
  {
@@ -199,14 +377,16 @@ function runIssueView()
 
  // A poor attempt to make videos not download, or to make the browser
  // cancel the video download. It does not really work. :(
- new MutationObserver(function() {
-  Array.prototype.forEach.call(
-   document.querySelectorAll("video"),
-   function (e)
-   {
-    e.parentNode.removeChild(e);
-   });
- })
+ new MutationObserver(
+  function ()
+  {
+   Array.prototype.forEach.call(
+    document.querySelectorAll("video"),
+    function (e)
+    {
+     e.parentNode.removeChild(e);
+    });
+  })
  .observe(
   document.documentElement,
   {
