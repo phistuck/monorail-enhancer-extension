@@ -2,14 +2,14 @@
 Enhancing Monorail, for a speedier bug driving. Err... tracking.
 
 ## Features
-- Adds a \"Run\" button to the HTML attachment source code viewer.
+- Adds a "Run" button to the HTML attachment source code viewer.
 - Removes inline videos.
 - Adds audio and video playback without saving the file first.
 - Fixes middle clicks on issue lists.
 - Adds navigational previous and next arrows to long comments.
 
 ## Compatibility
-Should work with any browser that supports the content script feature of Chrome extensions (so Edge, Firefox, Opera and Chrome?), ECMAScript 5 Array.prototype.filter, Array.prototype.map and Array.prototype.forEach.
+Should work with any browser that supports the content script feature of Chrome extensions (so Edge, Firefox, Opera and Chrome?), ECMAScript 5 `Array.prototype.filter`, `Array.prototype.map` and `Array.prototype.forEach`.
 
 ## Known Issues
 - Hiding and removing videos from the page does not cancel their download. Shame. It was a nice try.
