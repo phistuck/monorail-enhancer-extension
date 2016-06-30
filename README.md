@@ -12,7 +12,7 @@ Should work with any browser that supports the content script feature of Chrome 
 
 ## Known Issues
 - Hiding and removing videos from the page does not cancel their download. Shame. It was a nice try.
-However, the stupid code is left there in case it one day works. Note that I deliberately did not use any deprecated mutation events. I would want to get in the way of removing them from the platform one day.
+However, the stupid code is left there in case it one day works. Note that I deliberately did not use any deprecated mutation events. I would not want to get in the way of removing them from the platform one day.
 - Tested in Chrome 51, created by a human - so the supported video and audio extensions are hard coded according to my memory of the supported formats in Chrome 51.
 
 ## Pull Requests
