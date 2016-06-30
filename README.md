@@ -5,7 +5,6 @@ Enhancing Monorail, for a speedier bug driving. Err... tracking.
 - Adds a "Run" button to the HTML attachment source code viewer.
 - Removes inline videos.
 - Adds audio and video playback without saving the file first.
-- Fixes middle clicks on issue lists.
 - Adds navigational previous and next arrows to long comments.
 
 ## Compatibility
