@@ -225,92 +225,6 @@ function addNavigationalButtons()
  initializeOverlay();
 }
 
-function runListView()
-{
- var eResults = document.querySelector("#resultstable"),
-     lastClientX = 0, lastClientY = 0,
-     shouldCheckForClicks = true, shouldInitiateOpen = true;
- eResults.addEventListener(
-  "mousedown",
-  function (e)
-  {
-   if (e.button !== 1)
-   {
-    return;
-   }
-   lastClientX = e.clientX;
-   lastClientY = e.clientY;
-   e.preventDefault();
-  });
- eResults.addEventListener(
-  "mouseup",
-  function (e)
-  {
-   function open()
-   {
-    var element = e.target,
-        eLink,
-        hRef;
-
-    while (element && element.tagName !== "TR")
-    {
-     element = element.parentNode;
-    }
-    
-    if (!element)
-    {
-     return;
-    }
-    
-    eLink = element.querySelector("a[href]");
-    hRef = eLink.getAttribute("href");
-    if (!eLink || !hRef || hRef === "#")
-    {
-     return;
-    }
-
-    window.open(eLink.href);
-   }
-
-   if (e.clientX !== lastClientX || e.clientY !== lastClientY)
-   {
-    return;
-   }
-   
-   lastClientX = 0;
-   lastClientY = 0;
-   if (shouldCheckForClicks)
-   {
-    timer = 
-     setTimeout(
-      function ()
-      {
-       shouldCheckForClicks = false;
-       shouldInitiateOpen = true;
-       open();
-      },
-      200);
-   }
-   else if (shouldInitiateOpen)
-   {
-    open();
-   }
-  });
- eResults.addEventListener(
-  "click",
-  function (e)
-  {
-   if (e.button !== 1)
-   {
-    return;
-   }
-   
-   clearTimeout(timer);
-   shouldCheckForClicks = false;
-   shouldInitiateOpen = false;
-  });
-}
-
 function runIssueView()
 {
  function enhanceOldVideos()
@@ -398,10 +312,6 @@ function runIssueView()
 if (url.indexOf("issues/attachmentText?") !== -1)
 {
  document.addEventListener("DOMContentLoaded", runAttachmentView);
-}
-else if (url.indexOf("issues/list") !== -1)
-{
- document.addEventListener("DOMContentLoaded", runListView);
 }
 else if (url.indexOf("issues/detail") !== -1)
 {
