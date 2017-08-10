@@ -16,11 +16,8 @@ function runAttachmentView()
      eContainer,
      eLink,
      eLinkContainer;
-
- function processContent(event)
+ function processContent()
  {
-  event.preventDefault();
-
   var content =
        Array.prototype.map.call(
         eContent.querySelectorAll("tr"),
@@ -37,7 +34,11 @@ function runAttachmentView()
    "data:text/html;charset=" + contentEncoding
    "," +
    encodeURIComponent(content);
-
+ }
+ 
+ function openAsDataURL(event)
+ {
+  event.preventDefault();
   chrome.runtime.sendMessage({action: 'open-url', url: this.href});
  }
 
@@ -53,7 +54,17 @@ function runAttachmentView()
  eLink = eLinkContainer.appendChild(document.createElement("a"));
  eLink.innerHTML = "Run";
  eLink.href = "#";
- eLink.addEventListener("click", processContent);
+
+ // Since the link will open in a new tab regardless of the click type,
+ // listen to any type of standard non-right-click and prevent the
+ // default action of all of them. Right clicks are fine because
+ // Chrome does not consider them programmatic naviagations
+ // and thus, fortunately, does not block them. Since the "mousedown"
+ // event listener changes the "href" attribute of the link,
+ // despite the dubious href = "#" above, this works well.
+ eLink.addEventListener("mousedown", processContent);
+ eLink.addEventListener("click", openAsDataURL);
+ eLink.addEventListener("auxclick", openAsDataURL);
 }
 
 function addNavigationalButtons()
