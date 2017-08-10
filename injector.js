@@ -17,8 +17,10 @@ function runAttachmentView()
      eLink,
      eLinkContainer;
 
- function processContent()
+ function processContent(event)
  {
+  event.preventDefault();
+
   var content =
        Array.prototype.map.call(
         eContent.querySelectorAll("tr"),
@@ -26,12 +28,17 @@ function runAttachmentView()
         {
          return e.textContent;
         })
-        .join("\n");
+        .join("\n"),
+      contentEncodingMatches = content.match(/(?:charset['"\s]*=)([^'"\s>]+)/i),
+      contentEncoding =
+       ((contentEncodingMatches && contentEncodingMatches[1]) || '').trim() ||
+       'utf-8';
   this.href =
-   "data:text/html" +
-   (content.match(/charset['"\s]*=['"\s]*/i)? "": ";charset=utf-8") +
+   "data:text/html;charset=" + contentEncoding
    "," +
    encodeURIComponent(content);
+
+  chrome.runtime.sendMessage({action: 'open-url', url: this.href});
  }
 
  if (!eContent)
