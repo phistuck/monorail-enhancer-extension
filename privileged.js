@@ -12,6 +12,6 @@ chrome.runtime.onMessage.addListener(
  {
   if (message.action === "open-url")
   {
-   chrome.tabs.create({url: message.url};
+   chrome.tabs.create({url: message.url});
   }
  });
