@@ -35,6 +35,7 @@ function runAttachmentView()
      eContainer,
      eLink,
      eLinkContainer;
+ /** @this {HTMLAnchorElement} */
  function processContent()
  {
   var content =
@@ -50,11 +51,12 @@ function runAttachmentView()
        ((contentEncodingMatches && contentEncodingMatches[1]) || '').trim() ||
        'utf-8';
   this.href =
-   "data:text/html;charset=" + contentEncoding
-   "," +
+   "data:text/html;charset=" + contentEncoding + "," +
    encodeURIComponent(content);
  }
- 
+
+ /** @this {HTMLAnchorElement}
+     @param {Event} event */
  function openAsDataURL(event)
  {
   event.preventDefault();
@@ -97,6 +99,7 @@ function addNavigationalButtons()
      currentlyVisibleComment,
      eOverlay;
 
+ /** @param {boolean=} renew */
  function getComments(renew)
  {
   if (renew || !commentList)
