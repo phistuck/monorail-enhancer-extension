@@ -9,6 +9,25 @@
 
 var url = document.location.href;
 
+// An optimistic polyfill for iterable XPathResult.
+if (!XPathResult.prototype[Symbol.iterator])
+{
+ XPathResult.prototype[Symbol.iterator] = function *()
+ {
+  let eNext;
+  const setNext = () =>
+  {
+   eNext = this.iterateNext();
+  }
+  setNext();
+  while (eNext)
+  {
+   yield eNext;
+   setNext();
+  }
+ }
+}
+
 function runAttachmentView()
 {
  var eContent = document.querySelector("pre.prettyprint"),
@@ -325,10 +344,38 @@ function removeAndHideVideos()
   });
 }
 
+function tickBlinkPlatforms()
+{
+ for (let eLabel of document.evaluate(`//tr[th[@title = 'Operating System']]//label[count(.//input) = 1][contains('android: androidchrome: chrome osfuchsia: fuchsialinux: linuxmac: mac (osx)windows: windows', translate(@title, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'))]`, document))
+ {
+  let eInput = eLabel.querySelector('input');
+  if (!eInput || !eInput.checked)
+  {
+   eLabel.click();
+  }
+ }
+}
+
+function addTickBlinkPlatformsLink()
+{
+ let ePlatformsCell = document.evaluate(`//tr[th[@title = 'Operating System']][.//label//input]//td`, document).iterateNext()
+ if (!ePlatformsCell)
+ {
+  return;
+ }
+ let eTickBlinkPlatformsLink = document.createElement("a");
+ eTickBlinkPlatformsLink.href = "#";
+ eTickBlinkPlatformsLink.textContent = 'Tick platforms that use Blink';
+ eTickBlinkPlatformsLink.addEventListener(
+  "click", e => (e.preventDefault(), tickBlinkPlatforms()));
+ ePlatformsCell.append(eTickBlinkPlatformsLink);
+}
+
 function runIssueView()
 {
  removeAndHideVideos();
  document.addEventListener("DOMContentLoaded", enhanceOldVideos);
+ document.addEventListener("DOMContentLoaded", addTickBlinkPlatformsLink);
  window.addEventListener("load", addNavigationalButtons);
 }
 
