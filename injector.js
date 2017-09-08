@@ -243,64 +243,62 @@ function addNavigationalButtons()
  initializeOverlay();
 }
 
-function runIssueView()
+function enhanceOldVideos()
 {
- function enhanceOldVideos()
- {
-  Array.prototype.forEach.call(
-   document.querySelectorAll(
-   '*:not([href*="&inline=1"]):not([href*="attachmentText?aid"])' +
-   ' + a[href^="attachment?"][download]'),
-   function (e)
+ Array.prototype.forEach.call(
+  document.querySelectorAll(
+  '*:not([href*="&inline=1"]):not([href*="attachmentText?aid"])' +
+  ' + a[href^="attachment?"][download]'),
+  function (e)
+  {
+   var eFileName = e.parentNode.querySelector("b"),
+       fileName = (eFileName && eFileName.textContent) || "",
+       eLink,
+       acceptableExtensions =
+        [
+         "mp4",
+         "webm",
+         "mkv",
+         "ogv",
+         "wav",
+         "mp3",
+         "aac",
+         "ogg",
+         "opus",
+         // Surprisingly, it works.
+         // For example -
+         // crbug.com/619999#c6
+         "mov"
+         // TODO(phistuck) - add others?
+        ];
+   function contains(extension)
    {
-    var eFileName = e.parentNode.querySelector("b"),
-        fileName = (eFileName && eFileName.textContent) || "",
-        eLink,
-        acceptableExtensions =
-         [
-          "mp4",
-          "webm",
-          "mkv",
-          "ogv",
-          "wav",
-          "mp3",
-          "aac",
-          "ogg",
-          "opus",
-          // Surprisingly, it works.
-          // For example -
-          // crbug.com/619999#c6
-          "mov"
-          // TODO(phistuck) - add others?
-         ];
+    return fileName.indexOf("." + extension) !== -1? "1": "";
+   }
+   
+   if (!acceptableExtensions.map(contains).join(""))
+   {
+    return;
+   }
+   
+   eLink = e.parentNode.insertBefore(document.createElement("a"), e);
+   eLink.textContent = "Attempt viewing";
+   eLink.target = "_blank";
+   eLink.href =
+    "data:text/html," +
+    "<!doctype html><body style=\"margin: 0\">" +
+    "<video autoplay=\"autoplay\" " +
+    "onplay=\"this.width = window.innerWidth - 10; " +
+             "this.height = window.innerHeight - 10\"" +
+    "controls=\"controls\" src=\"" + e.href + "\"" +
+    "style=\"max-width: 100%; max-height: 100%;\"/>";
+  });
+}
 
-    function contains(extension)
-    {
-     return fileName.indexOf("." + extension) !== -1? "1": "";
-    }
-    
-    if (!acceptableExtensions.map(contains).join(""))
-    {
-     return;
-    }
-    
-    eLink = e.parentNode.insertBefore(document.createElement("a"), e);
-    eLink.textContent = "Attempt viewing";
-    eLink.target = "_blank";
-    eLink.href =
-     "data:text/html," +
-     "<!doctype html><body style=\"margin: 0\">" +
-     "<video autoplay=\"autoplay\" " +
-     "onplay=\"this.width = window.innerWidth - 10; " +
-              "this.height = window.innerHeight - 10\"" +
-     "controls=\"controls\" src=\"" + e.href + "\"" +
-     "style=\"max-width: 100%; max-height: 100%;\"/>";
-   });
- }
+function removeAndHideVideos()
+{
  document.documentElement.appendChild(document.createElement("style"))
   .textContent = "video {display: none;}";
- document.addEventListener("DOMContentLoaded", enhanceOldVideos);
- window.addEventListener("load", addNavigationalButtons);
 
  if (!window.MutationObserver)
  {
@@ -325,6 +323,13 @@ function runIssueView()
    childList: true,
    subtree: true
   });
+}
+
+function runIssueView()
+{
+ removeAndHideVideos();
+ document.addEventListener("DOMContentLoaded", enhanceOldVideos);
+ window.addEventListener("load", addNavigationalButtons);
 }
 
 if (url.indexOf("issues/attachmentText?") !== -1)
