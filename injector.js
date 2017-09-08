@@ -46,7 +46,7 @@ function runAttachmentView()
          return e.textContent;
         })
         .join("\n"),
-      contentEncodingMatches = content.match(/(?:charset['"\s]*=)([^'"\s>]+)/i),
+      contentEncodingMatches = content.match(/(?:charset\s*=['"\s]*)([^'"\s>]+)/i),
       contentEncoding =
        ((contentEncodingMatches && contentEncodingMatches[1]) || "").trim() ||
        "utf-8";
