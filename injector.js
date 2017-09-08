@@ -48,8 +48,8 @@ function runAttachmentView()
         .join("\n"),
       contentEncodingMatches = content.match(/(?:charset['"\s]*=)([^'"\s>]+)/i),
       contentEncoding =
-       ((contentEncodingMatches && contentEncodingMatches[1]) || '').trim() ||
-       'utf-8';
+       ((contentEncodingMatches && contentEncodingMatches[1]) || "").trim() ||
+       "utf-8";
   this.href =
    "data:text/html;charset=" + contentEncoding + "," +
    encodeURIComponent(content);
@@ -60,7 +60,7 @@ function runAttachmentView()
  function openAsDataURL(event)
  {
   event.preventDefault();
-  chrome.runtime.sendMessage({action: 'open-url', url: this.href});
+  chrome.runtime.sendMessage({action: "open-url", url: this.href});
  }
 
  if (!eContent)
@@ -269,8 +269,8 @@ function enhanceOldVideos()
 {
  Array.prototype.forEach.call(
   document.querySelectorAll(
-  '*:not([href*="&inline=1"]):not([href*="attachmentText?aid"])' +
-  ' + a[href^="attachment?"][download]'),
+  `*:not([href*="&inline=1"]):not([href*="attachmentText?aid"])` +
+  ` + a[href^="attachment?"][download]`),
   function (e)
   {
    var eFileName = e.parentNode.querySelector("b"),
@@ -349,9 +349,21 @@ function removeAndHideVideos()
 
 function tickBlinkPlatforms()
 {
- for (let eLabel of document.evaluate(`//tr[th[@title = 'Operating System']]//label[count(.//input) = 1][contains('android: androidchrome: chrome osfuchsia: fuchsialinux: linuxmac: mac (osx)windows: windows', translate(@title, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'))]`, document))
+ const platformTitles =
+        "android: androidchrome: chrome osfuchsia: fuchsia" +
+        "linux: linuxmac: mac (osx)windows: windows";
+ const lowerCasedTitle =
+        "translate(@title, " +
+        `'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')`;
+ const platformLabelResults =
+        document.evaluate(
+         `//tr[th[@title = 'Operating System']]
+           //label[count(.//input) = 1]
+                  [contains('${platformTitles}', ${lowerCasedTitle})]`,
+         document)
+ for (let eLabel of platformLabelResults)
  {
-  let eInput = eLabel.querySelector('input');
+  let eInput = eLabel.querySelector("input");
   if (!eInput || !eInput.checked)
   {
    eLabel.click();
@@ -361,14 +373,15 @@ function tickBlinkPlatforms()
 
 function addTickBlinkPlatformsLink()
 {
- let ePlatformsCell = document.evaluate(`//tr[th[@title = 'Operating System']][.//label//input]//td`, document).iterateNext()
+ const selector = `//tr[th[@title = 'Operating System']][.//label//input]//td`;
+ let ePlatformsCell = document.evaluate(selector, document).iterateNext()
  if (!ePlatformsCell)
  {
   return;
  }
  let eTickBlinkPlatformsLink = document.createElement("a");
  eTickBlinkPlatformsLink.href = "#";
- eTickBlinkPlatformsLink.textContent = 'Tick platforms that use Blink';
+ eTickBlinkPlatformsLink.textContent = "Tick platforms that use Blink";
  eTickBlinkPlatformsLink.addEventListener(
   "click", e => (e.preventDefault(), tickBlinkPlatforms()));
  ePlatformsCell.append(eTickBlinkPlatformsLink);
