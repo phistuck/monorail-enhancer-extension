@@ -117,13 +117,18 @@ function addNavigationalButtons()
            function (e)
            {
             var rect = e.getClientRects()[0];
+            if (!rect)
+            {
+             return;
+            }
 
             return {
                     element: e,
                     top: rect.top + scrollTop,
                     height: rect.height || (rect.bottom - rect.top)
                    };
-           });
+           })
+           .filter(element => element);
  }
 
  function getOverflowingElements(elements, maximalHeight)
@@ -131,7 +136,7 @@ function addNavigationalButtons()
    return elements.filter(
            function (element)
            {
-             return element.height > maximalHeight;
+            return element.height > maximalHeight;
            });
  }
 
@@ -204,6 +209,8 @@ function addNavigationalButtons()
   eOverlay.classList.remove("hidden");
  }
 
+ const stickyHeaderHeight = -50;
+
  function handlePreviousCommentClick(e)
  {
   e.preventDefault();
@@ -215,8 +222,12 @@ function addNavigationalButtons()
   else
   {
    scrollTo(
-    scrollX,
-    commentList[commentList.indexOf(currentlyVisibleComment) - 1].top);
+    {
+     top:
+      commentList[commentList.indexOf(currentlyVisibleComment) - 1].top +
+      stickyHeaderHeight,
+     behavior: "smooth"
+    });
   }
  }
 
@@ -230,8 +241,12 @@ function addNavigationalButtons()
   else
   {
    scrollTo(
-    scrollX,
-    commentList[commentList.indexOf(currentlyVisibleComment) + 1].top);
+    {
+     top:
+      commentList[commentList.indexOf(currentlyVisibleComment) + 1].top +
+      stickyHeaderHeight,
+     behavior: "smooth"
+    });
   }
  }
 
